@@ -434,7 +434,7 @@ input:hover:not(:focus) {
 }
 
 .theme-btn.active {
-  background: var(--accent-gradient);
+  background: #3b82f6;
   box-shadow: var(--shadow-accent);
   transform: scale(1.08);
 }
@@ -481,7 +481,7 @@ input:hover:not(:focus) {
 .avatar {
   width: 40px;
   height: 40px;
-  border-radius: 14px;
+  border-radius: 8px;
   background: var(--panel-border);
   display: flex;
   align-items: center;
@@ -500,9 +500,9 @@ input:hover:not(:focus) {
 }
 
 .message-bubble.assistant .avatar {
-  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 50%, #3b82f6 100%);
+  background: #3b82f6;
   color: white;
-  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
 }
 
 .content {
@@ -578,11 +578,11 @@ input:hover:not(:focus) {
 }
 
 .input-area button {
-  background: var(--accent-gradient);
+  background: #3b82f6;
   color: white;
   border: none;
   padding: 0 2rem;
-  border-radius: 14px;
+  border-radius: 8px;
   font-weight: 700;
   font-size: 0.95rem;
   cursor: pointer;
