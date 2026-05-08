@@ -1,8 +1,35 @@
 {
   "name": "omni-ai-client",
-  "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "A modern, elegant AI chat client that supports multiple AI providers with a beautiful glassmorphism UI",
   "type": "module",
+  "private": true,
+  "author": {
+    "name": "Your Name",
+    "email": "your.email@example.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "ai",
+    "chat",
+    "chatbot",
+    "openai",
+    "anthropic",
+    "claude",
+    "gpt",
+    "vue",
+    "vite",
+    "glassmorphism",
+    "ai-client"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:wjf2016/omni-ai-client.git"
+  },
+  "bugs": {
+    "url": "https://github.com/wjf2016/omni-ai-client/issues"
+  },
+  "homepage": "https://github.com/wjf2016/omni-ai-client#readme",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -14,5 +41,9 @@
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.6",
     "vite": "^8.0.10"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=7.0.0"
   }
 }
