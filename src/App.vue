@@ -60,7 +60,9 @@ onMounted(() => {
 
 // 检测是否为 Anthropic API
 const isAnthropicAPI = computed(() => {
-  return endpoint.value.includes('anthropic.com') || endpoint.value.includes('/v1/messages')
+  // 只有真正的 Anthropic 官方 API 才使用 Anthropic 协议
+  // DeepSeek 等第三方即使提供 /v1/messages 端点，也可能使用 OpenAI 协议
+  return endpoint.value.includes('anthropic.com') || endpoint.value.includes('api.anthropic.com')
 })
 
 // 构建请求体
@@ -152,7 +154,15 @@ const sendMessage = async () => {
 
     if (!response.ok) {
       const errorText = await response.text()
-      throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorText}`)
+      console.error('API Error Details:', {
+        status: response.status,
+        statusText: response.statusText,
+        endpoint: endpoint.value,
+        headers: headers,
+        requestBody: requestBody,
+        responseText: errorText
+      })
+      throw new Error(`API Error: ${response.status} - ${errorText}`)
     }
 
     const data = await response.json()
@@ -193,6 +203,7 @@ const sendMessage = async () => {
         <h4>Quick Presets</h4>
         <button @click="endpoint='https://platform.xiaomimimo.com/api/v1/chat/completions'; model='mimo-chat-v2.5'">Xiaomi MiMo</button>
         <button @click="endpoint='https://api.openai.com/v1/chat/completions'; model='gpt-4o'">OpenAI</button>
+        <button @click="endpoint='https://api.deepseek.com/chat/completions'; model='deepseek-chat'">DeepSeek</button>
         <button @click="endpoint='https://api.anthropic.com/v1/messages'; model='claude-3-5-sonnet-20241022'">Anthropic Claude</button>
       </div>
 
