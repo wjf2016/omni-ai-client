@@ -1,11 +1,14 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t, locale } = useI18n()
 
 const endpoint = ref('https://platform.xiaomimimo.com/api/v1/chat/completions')
 const apiKey = ref('')
 const model = ref('mimo-chat-v2.5')
 const messages = ref([
-  { role: 'assistant', content: 'Hello! I am Omni AI Client. Please configure your API settings to start chatting.' }
+  { role: 'assistant', content: t('chat.welcome') }
 ])
 const inputMessage = ref('')
 const isGenerating = ref(false)
@@ -35,6 +38,12 @@ const applyTheme = (themeValue) => {
 watch(appliedTheme, (newTheme) => {
   applyTheme(newTheme)
   localStorage.setItem('omni-theme', theme.value)
+})
+
+// 监听语言变化，保存到 localStorage
+watch(locale, (newLocale) => {
+  localStorage.setItem('omni-locale', newLocale)
+  document.documentElement.setAttribute('lang', newLocale)
 })
 
 // 监听系统主题变化
@@ -112,14 +121,14 @@ const parseResponse = (data) => {
     // Anthropic 响应格式: { content: [{ type: "text", text: "..." }] }
     if (data.content && data.content.length > 0) {
       const textContent = data.content.find(c => c.type === 'text')
-      return textContent ? textContent.text : 'No content'
+      return textContent ? textContent.text : t('chat.noContent')
     }
-    return 'No content'
+    return t('chat.noContent')
   } else {
     // OpenAI 响应格式: { choices: [{ message: { content: "..." } }] }
     return data.choices && data.choices[0] && data.choices[0].message
       ? data.choices[0].message.content
-      : 'No content'
+      : t('chat.noContent')
   }
 }
 
@@ -136,7 +145,7 @@ const sendMessage = async () => {
 
     if (!apiKey.value) {
       setTimeout(() => {
-        messages.value[messages.value.length - 1].content = 'Please set your API Key in the configuration.'
+        messages.value[messages.value.length - 1].content = t('chat.apiKeyMissing')
         isGenerating.value = false
       }, 500)
       return
@@ -162,13 +171,13 @@ const sendMessage = async () => {
         requestBody: requestBody,
         responseText: errorText
       })
-      throw new Error(`API Error: ${response.status} - ${errorText}`)
+      throw new Error(t('error.apiError', { status: response.status, detail: errorText }))
     }
 
     const data = await response.json()
     messages.value[messages.value.length - 1].content = parseResponse(data)
   } catch (error) {
-    messages.value[messages.value.length - 1].content = `Error: ${error.message}`
+    messages.value[messages.value.length - 1].content = t('error.requestFailed', { message: error.message })
   } finally {
     isGenerating.value = false
   }
@@ -190,7 +199,7 @@ const sendMessage = async () => {
         </div>
         <div class="brand-text">
           <h1 class="brand-name">Omni AI</h1>
-          <p class="brand-tagline">Intelligent Conversation</p>
+          <p class="brand-tagline">{{ t('brand.tagline') }}</p>
         </div>
       </div>
 
@@ -198,24 +207,24 @@ const sendMessage = async () => {
 
       <!-- 配置区 -->
       <div class="config-section">
-        <h3 class="section-label">Configuration</h3>
+        <h3 class="section-label">{{ t('config.title') }}</h3>
         <div class="input-group">
-          <label>API Endpoint</label>
-          <input v-model="endpoint" type="text" placeholder="https://api.openai.com/v1/chat/completions" />
+          <label>{{ t('config.endpoint') }}</label>
+          <input v-model="endpoint" type="text" :placeholder="t('config.endpointPlaceholder')" />
         </div>
         <div class="input-group">
-          <label>API Key</label>
-          <input v-model="apiKey" type="password" placeholder="sk-..." />
+          <label>{{ t('config.apiKey') }}</label>
+          <input v-model="apiKey" type="password" :placeholder="t('config.apiKeyPlaceholder')" />
         </div>
         <div class="input-group">
-          <label>Model ID</label>
-          <input v-model="model" type="text" placeholder="gpt-4o" />
+          <label>{{ t('config.modelId') }}</label>
+          <input v-model="model" type="text" :placeholder="t('config.modelPlaceholder')" />
         </div>
       </div>
 
       <!-- 快速预设 -->
       <div class="presets">
-        <h3 class="section-label">Quick Presets</h3>
+        <h3 class="section-label">{{ t('presets.title') }}</h3>
         <div class="preset-grid">
           <button class="preset-btn" @click="endpoint='https://platform.xiaomimimo.com/api/v1/chat/completions'; model='mimo-chat-v2.5'">MiMo</button>
           <button class="preset-btn" @click="endpoint='https://api.openai.com/v1/chat/completions'; model='gpt-4o'">OpenAI</button>
@@ -232,7 +241,7 @@ const sendMessage = async () => {
           <button
             :class="['theme-btn', { active: theme === 'light' }]"
             @click="theme = 'light'"
-            title="Light Mode"
+            :title="t('theme.light')"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
               <circle cx="12" cy="12" r="4"/>
@@ -242,7 +251,7 @@ const sendMessage = async () => {
           <button
             :class="['theme-btn', { active: theme === 'dark' }]"
             @click="theme = 'dark'"
-            title="Dark Mode"
+            :title="t('theme.dark')"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
               <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
@@ -251,13 +260,27 @@ const sendMessage = async () => {
           <button
             :class="['theme-btn', { active: theme === 'auto' }]"
             @click="theme = 'auto'"
-            title="Auto"
+            :title="t('theme.auto')"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
               <circle cx="12" cy="12" r="9"/>
               <path d="M12 3a9 9 0 0 1 0 18"/>
             </svg>
           </button>
+        </div>
+      </div>
+
+      <!-- 语言切换 -->
+      <div class="lang-section">
+        <div class="lang-switcher">
+          <button
+            :class="['lang-btn', { active: locale === 'zh' }]"
+            @click="locale = 'zh'"
+          >中文</button>
+          <button
+            :class="['lang-btn', { active: locale === 'en' }]"
+            @click="locale = 'en'"
+          >EN</button>
         </div>
       </div>
     </aside>
@@ -268,7 +291,7 @@ const sendMessage = async () => {
       <div class="chat-header">
         <div class="chat-header-left">
           <span class="header-dot"></span>
-          <span class="header-title">Conversation</span>
+          <span class="header-title">{{ t('chat.title') }}</span>
         </div>
         <span class="header-model">{{ model }}</span>
       </div>
@@ -294,7 +317,7 @@ const sendMessage = async () => {
             </template>
           </div>
           <div class="message-body">
-            <span class="message-role">{{ msg.role === 'user' ? 'You' : 'Omni AI' }}</span>
+            <span class="message-role">{{ msg.role === 'user' ? t('chat.you') : t('chat.assistant') }}</span>
             <div class="message-content">{{ msg.content }}<span class="cursor" v-if="isGenerating && index === messages.length - 1"></span></div>
           </div>
         </div>
@@ -307,7 +330,7 @@ const sendMessage = async () => {
             v-model="inputMessage"
             @keyup.enter="sendMessage"
             type="text"
-            placeholder="Type your message..."
+            :placeholder="t('chat.inputPlaceholder')"
             :disabled="isGenerating"
           />
           <button class="send-btn" @click="sendMessage" :disabled="isGenerating || !inputMessage.trim()">
@@ -534,6 +557,50 @@ input:hover:not(:focus) {
 }
 
 .theme-btn:active {
+  transform: scale(0.95);
+}
+
+/* 语言切换 */
+.lang-section {
+  padding-top: 0.5rem;
+}
+
+.lang-switcher {
+  display: flex;
+  gap: 0.35rem;
+  background: var(--input-bg);
+  padding: 0.35rem;
+  border-radius: 10px;
+  border: 1.5px solid var(--input-border);
+}
+
+.lang-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  padding: 0.5rem;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: inherit;
+}
+
+.lang-btn:hover:not(.active) {
+  color: var(--text-primary);
+  background: var(--accent-light);
+}
+
+.lang-btn.active {
+  background: var(--accent-color);
+  color: white;
+  box-shadow: var(--shadow-accent);
+}
+
+.lang-btn:active {
   transform: scale(0.95);
 }
 
