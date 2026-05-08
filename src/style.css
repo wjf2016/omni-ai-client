@@ -1,59 +1,54 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
-:root {
-  --bg-color: #0a0e14;
-  --panel-bg: rgba(20, 25, 35, 0.7);
-  --panel-border: rgba(255, 255, 255, 0.1);
-  --text-primary: #e8eef5;
-  --text-secondary: #94a3b8;
-  --accent-color: #3b82f6;
-  --accent-hover: #2563eb;
-  --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  --user-msg-bg: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.15) 100%);
-  --ai-msg-bg: rgba(255, 255, 255, 0.04);
-  --input-bg: rgba(15, 23, 42, 0.7);
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.15);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.25);
-  --shadow-accent: 0 4px 20px rgba(59, 130, 246, 0.3);
-}
-
-/* 白天模式主题变量 */
-[data-theme="light"] {
-  --bg-color: #f5f8fc;
-  --panel-bg: rgba(255, 255, 255, 0.85);
-  --panel-border: rgba(0, 0, 0, 0.06);
-  --text-primary: #1a202c;
-  --text-secondary: #64748b;
-  --accent-color: #3b82f6;
-  --accent-hover: #2563eb;
-  --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  --user-msg-bg: linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, rgba(37, 99, 235, 0.08) 100%);
-  --ai-msg-bg: rgba(0, 0, 0, 0.02);
-  --input-bg: rgba(255, 255, 255, 0.95);
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.08);
-  --shadow-accent: 0 4px 20px rgba(59, 130, 246, 0.2);
-}
-
-/* 夜间模式主题变量（默认） */
+/* 暗色模式 — 深棕奢华基调 */
+:root,
 [data-theme="dark"] {
-  --bg-color: #0a0e14;
-  --panel-bg: rgba(20, 25, 35, 0.7);
-  --panel-border: rgba(255, 255, 255, 0.1);
-  --text-primary: #e8eef5;
-  --text-secondary: #94a3b8;
-  --accent-color: #3b82f6;
-  --accent-hover: #2563eb;
-  --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  --user-msg-bg: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.15) 100%);
-  --ai-msg-bg: rgba(255, 255, 255, 0.04);
-  --input-bg: rgba(15, 23, 42, 0.7);
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.15);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.25);
-  --shadow-accent: 0 4px 20px rgba(59, 130, 246, 0.3);
+  --bg-color: #1c1714;
+  --panel-bg: rgba(30, 25, 22, 0.88);
+  --panel-bg-solid: #1e1916;
+  --panel-border: rgba(200, 150, 90, 0.12);
+  --text-primary: #f0ebe4;
+  --text-secondary: #a09688;
+  --accent-color: #c8965a;
+  --accent-hover: #d4a56a;
+  --accent-light: rgba(200, 150, 90, 0.12);
+  --accent-gradient: linear-gradient(135deg, #c8965a 0%, #a07040 100%);
+  --user-msg-bg: rgba(200, 150, 90, 0.1);
+  --ai-msg-bg: rgba(255, 255, 255, 0.025);
+  --input-bg: rgba(0, 0, 0, 0.35);
+  --input-border: rgba(200, 150, 90, 0.18);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.4);
+  --shadow-accent: 0 4px 20px rgba(200, 150, 90, 0.2);
+  --serif-font: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --divider: rgba(200, 150, 90, 0.1);
+  --input-focus-ring: rgba(200, 150, 90, 0.15);
+}
+
+/* 亮色模式 — 奶油暖白基调 */
+[data-theme="light"] {
+  --bg-color: #f7f3ed;
+  --panel-bg: rgba(255, 255, 255, 0.92);
+  --panel-bg-solid: #ffffff;
+  --panel-border: rgba(60, 40, 20, 0.08);
+  --text-primary: #2c2018;
+  --text-secondary: #8a7e72;
+  --accent-color: #b07d42;
+  --accent-hover: #96692f;
+  --accent-light: rgba(176, 125, 66, 0.08);
+  --accent-gradient: linear-gradient(135deg, #c8965a 0%, #b07d42 100%);
+  --user-msg-bg: rgba(176, 125, 66, 0.07);
+  --ai-msg-bg: rgba(0, 0, 0, 0.015);
+  --input-bg: rgba(255, 255, 255, 0.95);
+  --input-border: rgba(60, 40, 20, 0.12);
+  --shadow-sm: 0 2px 8px rgba(60, 40, 20, 0.06);
+  --shadow-md: 0 4px 20px rgba(60, 40, 20, 0.08);
+  --shadow-lg: 0 8px 40px rgba(60, 40, 20, 0.1);
+  --shadow-accent: 0 4px 20px rgba(176, 125, 66, 0.15);
+  --serif-font: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --divider: rgba(60, 40, 20, 0.08);
+  --input-focus-ring: rgba(176, 125, 66, 0.12);
 }
 
 * {
@@ -73,15 +68,17 @@ body {
   justify-content: center;
   align-items: center;
   background-image:
-    radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.12), transparent 30%),
-    radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.1), transparent 30%);
+    radial-gradient(ellipse at 15% 30%, rgba(200, 150, 90, 0.06), transparent 50%),
+    radial-gradient(ellipse at 85% 70%, rgba(160, 112, 64, 0.04), transparent 50%),
+    radial-gradient(ellipse at 50% 90%, rgba(200, 150, 90, 0.03), transparent 40%);
   transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 [data-theme="light"] body {
   background-image:
-    radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.06), transparent 30%),
-    radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.05), transparent 30%);
+    radial-gradient(ellipse at 15% 30%, rgba(200, 150, 90, 0.05), transparent 50%),
+    radial-gradient(ellipse at 85% 70%, rgba(160, 112, 64, 0.03), transparent 50%),
+    radial-gradient(ellipse at 50% 90%, rgba(200, 150, 90, 0.02), transparent 40%);
 }
 
 #app {
@@ -95,33 +92,33 @@ body {
 
 /* Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 5px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(200, 150, 90, 0.15);
   border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(200, 150, 90, 0.25);
 }
 
 [data-theme="light"] ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(176, 125, 66, 0.15);
 }
 [data-theme="light"] ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(176, 125, 66, 0.25);
 }
 
 /* Glass panel utility */
 .glass-panel {
   background: var(--panel-bg);
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
   border: 1px solid var(--panel-border);
-  border-radius: 20px;
+  border-radius: 16px;
   box-shadow: var(--shadow-lg);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -165,7 +162,7 @@ body {
     opacity: 1;
   }
   50% {
-    opacity: 0.5;
+    opacity: 0.4;
   }
 }
 

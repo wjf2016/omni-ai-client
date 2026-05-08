@@ -177,14 +177,28 @@ const sendMessage = async () => {
 
 <template>
   <div class="app-container">
+    <!-- 左侧面板：配置 + 品牌 -->
     <aside class="sidebar glass-panel">
+      <!-- 品牌区 -->
       <div class="brand">
-        <h2>Omni AI</h2>
-        <span class="badge">v1.0</span>
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+            <path d="M2 17l10 5 10-5"/>
+            <path d="M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1 class="brand-name">Omni AI</h1>
+          <p class="brand-tagline">Intelligent Conversation</p>
+        </div>
       </div>
-      
+
+      <div class="sidebar-divider"></div>
+
+      <!-- 配置区 -->
       <div class="config-section">
-        <h3>Configuration</h3>
+        <h3 class="section-label">Configuration</h3>
         <div class="input-group">
           <label>API Endpoint</label>
           <input v-model="endpoint" type="text" placeholder="https://api.openai.com/v1/chat/completions" />
@@ -198,441 +212,564 @@ const sendMessage = async () => {
           <input v-model="model" type="text" placeholder="gpt-4o" />
         </div>
       </div>
-      
+
+      <!-- 快速预设 -->
       <div class="presets">
-        <h4>Quick Presets</h4>
-        <button @click="endpoint='https://platform.xiaomimimo.com/api/v1/chat/completions'; model='mimo-chat-v2.5'">Xiaomi MiMo</button>
-        <button @click="endpoint='https://api.openai.com/v1/chat/completions'; model='gpt-4o'">OpenAI</button>
-        <button @click="endpoint='https://api.deepseek.com/chat/completions'; model='deepseek-chat'">DeepSeek</button>
-        <button @click="endpoint='https://api.anthropic.com/v1/messages'; model='claude-3-5-sonnet-20241022'">Anthropic Claude</button>
+        <h3 class="section-label">Quick Presets</h3>
+        <div class="preset-grid">
+          <button class="preset-btn" @click="endpoint='https://platform.xiaomimimo.com/api/v1/chat/completions'; model='mimo-chat-v2.5'">MiMo</button>
+          <button class="preset-btn" @click="endpoint='https://api.openai.com/v1/chat/completions'; model='gpt-4o'">OpenAI</button>
+          <button class="preset-btn" @click="endpoint='https://api.deepseek.com/chat/completions'; model='deepseek-chat'">DeepSeek</button>
+          <button class="preset-btn" @click="endpoint='https://api.anthropic.com/v1/messages'; model='claude-3-5-sonnet-20241022'">Claude</button>
+        </div>
       </div>
 
+      <div class="sidebar-spacer"></div>
+
+      <!-- 主题切换 -->
       <div class="theme-section">
-        <h4>主题</h4>
         <div class="theme-switcher">
           <button
             :class="['theme-btn', { active: theme === 'light' }]"
             @click="theme = 'light'"
-            title="白天模式"
+            title="Light Mode"
           >
-            ☀️
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+              <circle cx="12" cy="12" r="4"/>
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+            </svg>
           </button>
           <button
             :class="['theme-btn', { active: theme === 'dark' }]"
             @click="theme = 'dark'"
-            title="夜间模式"
+            title="Dark Mode"
           >
-            🌙
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
           </button>
           <button
             :class="['theme-btn', { active: theme === 'auto' }]"
             @click="theme = 'auto'"
-            title="自动模式"
+            title="Auto"
           >
-            🔄
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+              <circle cx="12" cy="12" r="9"/>
+              <path d="M12 3a9 9 0 0 1 0 18"/>
+            </svg>
           </button>
         </div>
       </div>
     </aside>
 
+    <!-- 右侧：聊天区域 -->
     <main class="chat-area glass-panel">
+      <!-- 聊天头部 -->
+      <div class="chat-header">
+        <div class="chat-header-left">
+          <span class="header-dot"></span>
+          <span class="header-title">Conversation</span>
+        </div>
+        <span class="header-model">{{ model }}</span>
+      </div>
+
+      <div class="chat-divider"></div>
+
+      <!-- 消息列表 -->
       <div class="messages">
-        <div v-for="(msg, index) in messages" :key="index" :class="['message-bubble', msg.role]">
-          <div class="avatar">{{ msg.role === 'user' ? 'U' : 'AI' }}</div>
-          <div class="content">{{ msg.content }}<span class="cursor" v-if="isGenerating && index === messages.length - 1"></span></div>
+        <div v-for="(msg, index) in messages" :key="index" :class="['message', msg.role]">
+          <div class="message-avatar">
+            <template v-if="msg.role === 'assistant'">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                <path d="M2 17l10 5 10-5"/>
+                <path d="M2 12l10 5 10-5"/>
+              </svg>
+            </template>
+            <template v-else>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            </template>
+          </div>
+          <div class="message-body">
+            <span class="message-role">{{ msg.role === 'user' ? 'You' : 'Omni AI' }}</span>
+            <div class="message-content">{{ msg.content }}<span class="cursor" v-if="isGenerating && index === messages.length - 1"></span></div>
+          </div>
         </div>
       </div>
-      
+
+      <!-- 输入区 -->
       <div class="input-area">
-        <input 
-          v-model="inputMessage" 
-          @keyup.enter="sendMessage"
-          type="text" 
-          placeholder="Message Omni AI..." 
-          :disabled="isGenerating"
-        />
-        <button @click="sendMessage" :disabled="isGenerating || !inputMessage.trim()">
-          Send
-        </button>
+        <div class="input-wrapper">
+          <input
+            v-model="inputMessage"
+            @keyup.enter="sendMessage"
+            type="text"
+            placeholder="Type your message..."
+            :disabled="isGenerating"
+          />
+          <button class="send-btn" @click="sendMessage" :disabled="isGenerating || !inputMessage.trim()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+              <line x1="22" y1="2" x2="11" y2="13"/>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+          </button>
+        </div>
       </div>
     </main>
   </div>
 </template>
 
 <style scoped>
+/* ============================================
+   整体布局
+   ============================================ */
 .app-container {
   display: flex;
   width: 100%;
   height: 100%;
-  gap: 1.8rem;
+  gap: 1.5rem;
 }
 
+/* ============================================
+   侧边栏
+   ============================================ */
 .sidebar {
-  width: 320px;
-  padding: 2rem;
+  width: 300px;
+  padding: 2rem 1.75rem;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
+  overflow-y: auto;
 }
 
+.sidebar-spacer {
+  flex: 1;
+}
+
+.sidebar-divider {
+  height: 1px;
+  background: var(--divider);
+  margin: 0.25rem 0;
+}
+
+/* 品牌 */
 .brand {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.5rem;
+  gap: 1rem;
 }
 
-.brand h2 {
-  font-weight: 800;
-  font-size: 1.5rem;
-  letter-spacing: -0.8px;
+.brand-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
   background: var(--accent-gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: var(--shadow-accent);
+  flex-shrink: 0;
 }
 
-.badge {
-  background: var(--user-msg-bg);
-  color: var(--accent-color);
-  padding: 0.25rem 0.6rem;
-  border-radius: 6px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.5px;
+.brand-text {
+  display: flex;
+  flex-direction: column;
 }
 
-.config-section h3 {
-  font-size: 0.75rem;
-  text-transform: uppercase;
+.brand-name {
+  font-family: var(--serif-font);
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
+  line-height: 1.2;
+}
+
+.brand-tagline {
+  font-size: 0.7rem;
   color: var(--text-secondary);
-  letter-spacing: 1.5px;
-  margin-bottom: 1.2rem;
-  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+/* 配置区 */
+.section-label {
+  font-family: var(--serif-font);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  color: var(--accent-color);
+  letter-spacing: 2px;
+  margin-bottom: 1rem;
+  font-weight: 500;
 }
 
 .input-group {
-  margin-bottom: 1.2rem;
+  margin-bottom: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 0.4rem;
 }
 
 .input-group label {
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   color: var(--text-secondary);
   font-weight: 600;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
 }
 
 input {
   background: var(--input-bg);
-  border: 1.5px solid var(--panel-border);
+  border: 1.5px solid var(--input-border);
   color: var(--text-primary);
-  padding: 0.9rem 1.1rem;
+  padding: 0.75rem 1rem;
   border-radius: 10px;
   font-family: inherit;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   outline: none;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.5;
+}
+
 input:focus {
   border-color: var(--accent-color);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
-  transform: translateY(-1px);
+  box-shadow: 0 0 0 3px var(--input-focus-ring);
 }
 
 input:hover:not(:focus) {
-  border-color: rgba(59, 130, 246, 0.3);
+  border-color: rgba(200, 150, 90, 0.3);
 }
 
-.presets h4 {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  margin-bottom: 1rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
+[data-theme="light"] input:hover:not(:focus) {
+  border-color: rgba(176, 125, 66, 0.25);
 }
 
-.presets button {
-  background: transparent;
+/* 预设按钮 */
+.preset-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.preset-btn {
+  background: var(--accent-light);
   border: 1.5px solid var(--panel-border);
   color: var(--text-primary);
-  padding: 0.6rem 1.1rem;
+  padding: 0.55rem 0.8rem;
   border-radius: 8px;
   cursor: pointer;
-  margin-right: 0.5rem;
-  margin-bottom: 0.5rem;
-  font-size: 0.85rem;
+  font-size: 0.78rem;
   font-weight: 600;
+  letter-spacing: 0.3px;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
 }
 
-.presets button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: var(--accent-gradient);
-  opacity: 0;
-  transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: -1;
-}
-
-.presets button:hover {
+.preset-btn:hover {
+  background: var(--accent-color);
+  color: white;
   border-color: var(--accent-color);
-  transform: translateY(-2px);
+  transform: translateY(-1px);
   box-shadow: var(--shadow-sm);
 }
 
-.presets button:hover::before {
-  opacity: 0.1;
-}
-
-.presets button:active {
+.preset-btn:active {
   transform: translateY(0);
 }
 
+/* 主题切换 */
 .theme-section {
-  margin-top: auto;
-  padding-top: 1rem;
-  border-top: 1px solid var(--panel-border);
-}
-
-.theme-section h4 {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  margin-bottom: 1rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
+  padding-top: 0.5rem;
 }
 
 .theme-switcher {
   display: flex;
-  gap: 0.4rem;
+  gap: 0.35rem;
   background: var(--input-bg);
-  padding: 0.4rem;
+  padding: 0.35rem;
   border-radius: 10px;
-  border: 1.5px solid var(--panel-border);
+  border: 1.5px solid var(--input-border);
 }
 
 .theme-btn {
   flex: 1;
   background: transparent;
   border: none;
-  color: var(--text-primary);
-  padding: 0.7rem;
+  color: var(--text-secondary);
+  padding: 0.5rem;
   border-radius: 7px;
   cursor: pointer;
-  font-size: 1.3rem;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
+}
+
+.theme-btn svg {
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .theme-btn:hover:not(.active) {
-  background: var(--panel-border);
-  transform: scale(1.05);
+  color: var(--text-primary);
+  background: var(--accent-light);
+}
+
+.theme-btn:hover:not(.active) svg {
+  transform: rotate(15deg);
 }
 
 .theme-btn.active {
-  background: #3b82f6;
+  background: var(--accent-color);
+  color: white;
   box-shadow: var(--shadow-accent);
-  transform: scale(1.08);
 }
 
 .theme-btn:active {
   transform: scale(0.95);
 }
 
+/* ============================================
+   聊天区域
+   ============================================ */
 .chat-area {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 2rem;
+  padding: 0;
   position: relative;
+  overflow: hidden;
 }
 
+/* 聊天头部 */
+.chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 2rem;
+  flex-shrink: 0;
+}
+
+.chat-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.header-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4ade80;
+  box-shadow: 0 0 6px rgba(74, 222, 128, 0.4);
+}
+
+.header-title {
+  font-family: var(--serif-font);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  letter-spacing: 0.3px;
+}
+
+.header-model {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  background: var(--accent-light);
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+.chat-divider {
+  height: 1px;
+  background: var(--divider);
+  flex-shrink: 0;
+}
+
+/* 消息列表 */
 .messages {
   flex: 1;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 1.8rem;
-  padding-right: 1rem;
-  margin-bottom: 1.5rem;
+  gap: 1.5rem;
+  padding: 1.5rem 2rem;
 }
 
-.message-bubble {
+.message {
   display: flex;
-  gap: 1rem;
-  max-width: 85%;
+  gap: 0.85rem;
+  max-width: 90%;
   animation: fadeIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
-.message-bubble.user {
+.message.user {
   align-self: flex-end;
   flex-direction: row-reverse;
   animation: slideInFromRight 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
-.message-bubble.assistant {
+.message.assistant {
   animation: slideInFromLeft 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
-.avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  background: var(--panel-border);
+.message-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
-  font-size: 0.95rem;
   flex-shrink: 0;
-  box-shadow: var(--shadow-sm);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.message-bubble.user .avatar {
+.message.user .message-avatar {
   background: var(--accent-gradient);
   color: white;
   box-shadow: var(--shadow-accent);
 }
 
-.message-bubble.assistant .avatar {
-  background: #3b82f6;
-  color: white;
-  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+.message.assistant .message-avatar {
+  background: var(--accent-light);
+  color: var(--accent-color);
+  border: 1px solid var(--panel-border);
 }
 
-.content {
+.message-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.message-role {
+  font-size: 0.68rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding-left: 0.1rem;
+}
+
+.message.user .message-role {
+  text-align: right;
+  padding-right: 0.1rem;
+  padding-left: 0;
+}
+
+.message-content {
   background: var(--ai-msg-bg);
-  padding: 1.1rem 1.4rem;
-  border-radius: 18px;
-  border: 1.5px solid var(--panel-border);
-  font-size: 0.95rem;
+  padding: 0.9rem 1.2rem;
+  border-radius: 4px 14px 14px 14px;
+  border: 1px solid var(--panel-border);
+  font-size: 0.9rem;
   line-height: 1.7;
   text-wrap: pretty;
   box-shadow: var(--shadow-sm);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
+  color: var(--text-primary);
 }
 
-.content::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 18px;
-  padding: 1.5px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
-  opacity: 0.5;
-}
-
-.message-bubble.user .content {
+.message.user .message-content {
   background: var(--user-msg-bg);
-  border-color: rgba(59, 130, 246, 0.3);
-  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.15);
+  border-color: rgba(200, 150, 90, 0.2);
+  border-radius: 14px 4px 14px 14px;
 }
 
-.message-bubble:hover .content {
-  transform: translateY(-1px);
+.message.user .message-content {
+  background: var(--user-msg-bg);
+  border-color: rgba(200, 150, 90, 0.2);
+}
+
+.message:hover .message-content {
   box-shadow: var(--shadow-md);
 }
 
+/* 光标 */
 .cursor {
   display: inline-block;
   width: 2px;
-  height: 16px;
-  background: var(--accent-gradient);
-  margin-left: 4px;
+  height: 14px;
+  background: var(--accent-color);
+  margin-left: 3px;
   animation: pulse 1.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   border-radius: 1px;
-  box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+  vertical-align: middle;
 }
 
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
-}
-
+/* 输入区 */
 .input-area {
+  padding: 1.25rem 2rem 1.5rem;
+  flex-shrink: 0;
+}
+
+.input-wrapper {
   display: flex;
-  gap: 0.8rem;
-  align-items: stretch;
-}
-
-.input-area input {
-  flex: 1;
-  padding: 1.1rem 1.5rem;
+  gap: 0.6rem;
+  align-items: center;
+  background: var(--input-bg);
+  border: 1.5px solid var(--input-border);
   border-radius: 14px;
-  font-size: 0.95rem;
+  padding: 0.35rem 0.35rem 0.35rem 1rem;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.input-area input::placeholder {
-  color: var(--text-secondary);
-  opacity: 0.6;
+.input-wrapper:focus-within {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px var(--input-focus-ring);
 }
 
-.input-area button {
-  background: #3b82f6;
+.input-wrapper input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 0.65rem 0;
+  font-size: 0.9rem;
+  border-radius: 0;
+}
+
+.input-wrapper input:focus {
+  box-shadow: none;
+  border: none;
+}
+
+.send-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: var(--accent-gradient);
   color: white;
   border: none;
-  padding: 0 2rem;
-  border-radius: 8px;
-  font-weight: 700;
-  font-size: 0.95rem;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: var(--shadow-accent);
-  letter-spacing: 0.3px;
-  position: relative;
-  overflow: hidden;
 }
 
-.input-area button::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
-  transform: translate(-50%, -50%);
-  transition: width 0.6s, height 0.6s;
+.send-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(200, 150, 90, 0.3);
 }
 
-.input-area button:hover:not(:disabled) {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 6px 24px rgba(59, 130, 246, 0.4);
+.send-btn:active:not(:disabled) {
+  transform: translateY(0) scale(0.95);
 }
 
-.input-area button:active:not(:disabled) {
-  transform: translateY(0) scale(0.98);
-}
-
-.input-area button:active:not(:disabled)::before {
-  width: 300px;
-  height: 300px;
-}
-
-.input-area button:disabled {
-  opacity: 0.5;
+.send-btn:disabled {
+  opacity: 0.4;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
