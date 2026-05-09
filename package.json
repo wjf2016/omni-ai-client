@@ -36,6 +36,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "highlight.js": "^11.11.1",
+    "katex": "^0.16.45",
+    "marked": "^18.0.3",
+    "mermaid": "^11.14.0",
     "vue": "^3.5.32",
     "vue-i18n": "^11.4.2"
   },

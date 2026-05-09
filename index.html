@@ -7,6 +7,60 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+    <style>
+      /* 防止主题闪烁：在 CSS 加载前设置背景色 */
+      html, body {
+        margin: 0;
+        padding: 0;
+        background-color: #1c1714; /* 默认深色背景 */
+        transition: background-color 0s; /* 禁用过渡动画 */
+      }
+      [data-theme="light"] body {
+        background-color: #f7f3ed; /* 浅色背景 */
+      }
+    </style>
+    <script>
+      // 在页面渲染前立即应用主题，避免闪烁
+      (function() {
+        function getSystemTheme() {
+          return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        function applyTheme(theme) {
+          if (theme === 'auto') {
+            theme = getSystemTheme();
+          }
+          document.documentElement.setAttribute('data-theme', theme);
+        }
+
+        // 从 IndexedDB 读取主题设置
+        const request = indexedDB.open('omni-ai-db', 1);
+
+        request.onsuccess = function() {
+          const db = request.result;
+          if (db.objectStoreNames.contains('settings')) {
+            const tx = db.transaction(['settings'], 'readonly');
+            const store = tx.objectStore('settings');
+            const getRequest = store.get('theme');
+
+            getRequest.onsuccess = function() {
+              const theme = getRequest.result ? getRequest.result.value : 'auto';
+              applyTheme(theme);
+            };
+
+            getRequest.onerror = function() {
+              applyTheme('auto');
+            };
+          } else {
+            applyTheme('auto');
+          }
+        };
+
+        request.onerror = function() {
+          applyTheme('auto');
+        };
+      })();
+    </script>
   </head>
   <body>
     <div id="app"></div>
